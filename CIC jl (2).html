@@ -1,0 +1,251 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>CIC — Center for International Clarity (Student View)</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <style>
+    :root { --maxw: 1100px; --accent:#b22222; --nav-bg:#f8f8f8; --muted:#666; }
+    body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial; margin:0; color:#111; background:#fbfbfb;}
+    .top-banner { background:var(--accent); color:white; padding:12px; text-align:center; font-weight:700; letter-spacing:0.5px; font-size:15px;}
+    header { background:#222; color:#fff; padding:12px 16px; position:sticky; top:0; z-index:40; display:flex; align-items:center; gap:12px; justify-content:space-between; }
+    .brand { display:flex; gap:12px; align-items:center; }
+    .logo { font-size:20px; font-weight:800; letter-spacing:1px; }
+    .subtitle { font-size:13px; opacity:0.95; color:#e7e7e7; }
+    .container { max-width:var(--maxw); margin:16px auto; padding:0 16px; }
+    .lead { background:#fff9f9; border-left:6px solid #ffd1d1; padding:14px; margin-bottom:14px; border-radius:6px; }
+    .controls { display:flex; gap:8px; flex-wrap:wrap; align-items:center; }
+
+    .tabs { background:var(--nav-bg); border-bottom:1px solid #e6e6e6; display:flex; gap:18px; padding:10px 16px; align-items:center; position:sticky; top:64px; z-index:30; }
+    .tab { cursor:pointer; padding:8px 10px; border-radius:4px; font-weight:700; color:#333; }
+    .tab.active { background:white; box-shadow:0 1px 3px rgba(0,0,0,0.06); border:1px solid #e6e6e6; }
+
+    .main { display:block; padding:18px 0; }
+    .pane { display:none; }
+    .pane.active { display:block; }
+
+    .controls-row { display:flex; justify-content:space-between; gap:12px; align-items:center; margin-bottom:12px; }
+    .articles { display:grid; grid-template-columns: 1fr; gap:14px; margin-top:14px; }
+    article.card { background:white; padding:14px; border-radius:8px; box-shadow:0 1px 4px rgba(0,0,0,0.04); border:1px solid #eee; }
+    article h2 { margin:0 0 8px 0; font-size:18px; cursor:pointer; color:#123a7a; text-decoration:underline; }
+    .meta { font-size:13px; color:var(--muted); margin-bottom:12px; }
+    .thumb-wrap { cursor:pointer; border-radius:6px; overflow:hidden; }
+    img.thumb { width:100%; max-height:240px; object-fit:cover; display:block; aspect-ratio:16/9; background:#eee; }
+
+    .small { font-size:13px; color:var(--muted); }
+
+    footer { max-width:var(--maxw); margin:36px auto; padding:10px 16px; color:var(--muted); font-size:13px; text-align:center; }
+
+    .info-display { background:#fff; padding:14px; border-radius:8px; border:1px solid #f0f0f0; min-height:140px; }
+
+    @media (min-width:720px){
+      .articles { grid-template-columns: 1fr 1fr; }
+    }
+
+    .modal-backdrop { position:fixed; inset:0; background:rgba(0,0,0,0.6); display:none; align-items:center; justify-content:center; z-index:200; }
+    .modal { background:white; width:min(900px,96%); max-height:90vh; overflow:auto; border-radius:8px; padding:18px; box-shadow:0 6px 30px rgba(0,0,0,0.35); }
+    .modal h2 { margin-top:0; }
+    .modal .meta { margin-bottom:14px; }
+    .modal img { width:100%; border-radius:6px; margin-bottom:12px; object-fit:cover; }
+  </style>
+</head>
+<body>
+  <div class="top-banner">CIC — Center for International Clarity</div>
+
+  <header>
+    <div class="brand">
+      <div>
+        <div class="logo">Anti-Fake News Site</div>
+        <div class="subtitle">Global News Platform</div>
+      </div>
+    </div>
+    <div style="min-width:1px;"></div>
+  </header>
+
+  <div class="tabs" role="tablist" aria-label="Main sections">
+    <div class="tab active" data-tab="news">News</div>
+    <div class="tab" data-tab="institution">Information of Institution</div>
+    <div class="tab" data-tab="antifake">Anti-Fake News System</div>
+    <div class="tab" data-tab="report">Report</div>
+  </div>
+
+  <div class="container">
+    <div class="lead">
+      <strong>Note:</strong> This platform is run by a non-profit organization, Transparent Press Campain, but unauthorized alteration, reproduction, or distribution is prohibited.
+    </div>
+
+    <div class="main">
+      <!-- News (student view, no edit buttons) -->
+      <div id="pane-news" class="pane active" aria-labelledby="news">
+        <div class="controls-row">
+          <div></div>
+          <div><small class="small">Student view — articles are read-only</small></div>
+        </div>
+        <div id="articles" class="articles" aria-live="polite"></div>
+      </div>
+
+      <!-- Institution (read-only) -->
+      <div id="pane-institution" class="pane" aria-labelledby="institution">
+        <label style="font-weight:700;">Institution Information</label>
+        <div id="institution-display" class="info-display"></div>
+      </div>
+
+      <!-- Anti-Fake (read-only) -->
+      <div id="pane-antifake" class="pane" aria-labelledby="antifake">
+        <label style="font-weight:700;">Anti-Fake News System</label>
+        <div id="antifake-display" class="info-display"></div>
+      </div>
+
+      <!-- Report (read-only) -->
+      <div id="pane-report" class="pane" aria-labelledby="report">
+        <label style="font-weight:700;">Report</label>
+        <div id="report-display" class="info-display"></div>
+      </div>
+    </div>
+  </div>
+
+  <footer>
+    <div>Created for classroom media literacy. Keep content fictional and do not publish private information.</div>
+  </footer>
+
+  <!-- Article modal -->
+  <div id="modal-backdrop" class="modal-backdrop" role="dialog" aria-modal="true" aria-hidden="true">
+    <div class="modal" role="document">
+      <button id="modal-close" style="float:right;background:#eee;border:none;border-radius:6px;padding:6px 8px;cursor:pointer;">Close ✕</button>
+      <div id="modal-content" style="clear:both;"></div>
+    </div>
+  </div>
+
+<script>
+/* Tabs */
+document.querySelectorAll('.tab').forEach(tab => {
+  tab.addEventListener('click', () => {
+    document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+    tab.classList.add('active');
+    const target = tab.dataset.tab;
+    document.querySelectorAll('.pane').forEach(p => p.classList.remove('active'));
+    document.getElementById('pane-' + target).classList.add('active');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  });
+});
+
+/* Helpers */
+function escapeHtml(s){
+  if(!s) return '';
+  return s.replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'})[m]);
+}
+
+/* Load articles from localStorage (teacher가 JSON import해서 저장해둔 내용) */
+const STORAGE_KEY = 'mocknews_articles_v1';
+let articles = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
+
+/* 🔧 특정 기사(Why Students…) 내용 덮어쓰기 */
+const targetTitle = '"Why Students These Days Are So Rude and Unethical?"';
+const patchedBody =
+`In the picture above, a student criminal is taking a mug shot.
+Youth crime is serious. Bullying and crime are increasing in the UK and the US.
+In Europe and Central Asia, a report said that in 2024, one out of three teenagers experienced cyberbullying.
+
+There is a need for measures to deal with the rising youth crime worldwide.
+In 2022, the US Secretary of Education said, “Students today have much lower ethical awareness than before. They grow up in a digital world and are constantly exposed to violent and unethical content.”
+
+Another problem in US is gun crimes in school. It has become one of the most serious problems in the US. In fact, more than half of the gun crimes in schools stem from students' lack of morality. In this situation, Louisiana ultimately decided to provide guns to all students because of increasing school violence and shootings.
+
+Also, in the UK, knife crimes have increased by 87% over the past 10 years, and in 2024, teenagers made up 17% of knife or weapon-related crimes according to the Ministry of Justice.
+
+The UK Education Minister said, “We will no longer be easygoing with serious crimes by students. There will be strict punishment. Students can no longer be treated with understanding or forgiveness. We have decided that students will no longer be treated as subjects of understanding and respect, but as objects of surveillance and discipline.”
+
+This caused controversy.
+Some teacher organizations in the UK reacted strongly. “Such remarks by the Education Minister go against the history of education. Fear is harmful to students.”
+
+Social instability, weak education systems, and the expansion of online environments may be causes of these problems.`;
+
+articles = articles.map(a => {
+  if (a.title === targetTitle) {
+    return { ...a, body: patchedBody };
+  }
+  return a;
+});
+
+/* Render articles (read-only, 클릭 시 모달) */
+const articlesDiv = document.getElementById('articles');
+
+function renderArticles(){
+  articlesDiv.innerHTML = '';
+  if (articles.length === 0){
+    articlesDiv.innerHTML = '<p class="small">No articles available.</p>';
+    return;
+  }
+  const arr = articles.slice().sort((a,b)=> b.savedAt - a.savedAt);
+  arr.forEach(a => {
+    const art = document.createElement('article');
+    art.className = 'card';
+    const thumbHtml = a.image ? `<div class="thumb-wrap" data-id="${a.id}"><img class="thumb" src="${a.image}" alt="thumbnail"></div>` : '';
+    art.innerHTML = `
+      ${thumbHtml}
+      <h2 data-id="${a.id}">${escapeHtml(a.title)}</h2>
+      <div class="meta">${escapeHtml(a.author || 'Unknown')} · ${escapeHtml(a.category || '')} · ${new Date(a.savedAt).toLocaleString()}</div>
+      <p>${escapeHtml(a.body).slice(0,400)}${a.body.length>400 ? '...' : ''}</p>
+    `;
+    articlesDiv.appendChild(art);
+  });
+
+  document.querySelectorAll('.thumb-wrap').forEach(el => {
+    el.onclick = () => openArticleModal(el.dataset.id);
+  });
+  document.querySelectorAll('article.card h2').forEach(h => {
+    h.onclick = () => openArticleModal(h.dataset.id);
+  });
+}
+
+/* Modal */
+const modalBackdrop = document.getElementById('modal-backdrop');
+const modalContent = document.getElementById('modal-content');
+const modalClose = document.getElementById('modal-close');
+
+function openArticleModal(id){
+  const a = articles.find(x=>x.id===id);
+  if(!a) return;
+  const imageHtml = a.image ? `<img src="${a.image}" alt="image">` : '';
+  modalContent.innerHTML = `
+    <h2>${escapeHtml(a.title)}</h2>
+    <div class="meta">${escapeHtml(a.author || 'Unknown')} · ${escapeHtml(a.category || '')} · ${new Date(a.savedAt).toLocaleString()}</div>
+    ${imageHtml}
+    <div style="white-space:pre-wrap;">${escapeHtml(a.body)}</div>
+  `;
+  modalBackdrop.style.display = 'flex';
+  modalBackdrop.setAttribute('aria-hidden','false');
+  document.body.style.overflow = 'hidden';
+}
+
+function closeModal(){
+  modalBackdrop.style.display = 'none';
+  modalBackdrop.setAttribute('aria-hidden','true');
+  modalContent.innerHTML = '';
+  document.body.style.overflow = '';
+}
+
+modalClose.onclick = closeModal;
+modalBackdrop.onclick = (e)=>{ if(e.target===modalBackdrop) closeModal(); };
+document.addEventListener('keydown', e=>{ if(e.key==='Escape') closeModal(); });
+
+/* Pages (read-only) */
+const PAGES_KEY = 'mocknews_pages_v1';
+let pages = JSON.parse(localStorage.getItem(PAGES_KEY) || '{}');
+
+function updateDisplay(key, elementId){
+  const text = pages[key] || '';
+  const html = escapeHtml(text).replace(/\n/g,'<br>');
+  document.getElementById(elementId).innerHTML = html;
+}
+
+pages = pages || {};
+updateDisplay('institution', 'institution-display');
+updateDisplay('antifake', 'antifake-display');
+updateDisplay('report', 'report-display');
+
+/* Initial render */
+renderArticles();
+</script>
+</body>
+</html>
