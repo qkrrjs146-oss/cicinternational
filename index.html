@@ -15,16 +15,13 @@
     .container { max-width:var(--maxw); margin:16px auto; padding:0 16px; }
     .lead { background:#fff9f9; border-left:6px solid #ffd1d1; padding:14px; margin-bottom:14px; border-radius:6px; }
 
-    /* Tabs */
     .tabs { background:var(--nav-bg); border-bottom:1px solid #e6e6e6; display:flex; gap:18px; padding:10px 16px; align-items:center; position:sticky; top:64px; z-index:30; }
     .tab { cursor:pointer; padding:8px 10px; border-radius:4px; font-weight:700; color:#333; }
     .tab.active { background:white; box-shadow:0 1px 3px rgba(0,0,0,0.06); border:1px solid #e6e6e6; }
 
-    /* Layout */
     .pane { display:none; padding-top:18px; }
     .pane.active { display:block; }
 
-    /* Articles */
     .articles { display:grid; grid-template-columns:1fr; gap:14px; margin-top:10px; }
     @media(min-width:720px){ .articles{ grid-template-columns:1fr 1fr;} }
 
@@ -33,12 +30,10 @@
     .meta { font-size:13px; color:#666; margin-bottom:12px; }
     img.thumb { width:100%; max-height:240px; object-fit:cover; border-radius:6px; aspect-ratio:16/9; background:#eee; cursor:pointer; }
 
-    /* Modal */
     .modal-backdrop { position:fixed; inset:0; background:rgba(0,0,0,0.65); display:none; align-items:center; justify-content:center; z-index:200; }
     .modal { background:white; width:min(900px,95%); max-height:90vh; overflow:auto; border-radius:8px; padding:18px; box-shadow:0 6px 30px rgba(0,0,0,0.35); }
     .modal h2 { margin-top:0; }
 
-    /* Info display */
     .info-display { background:white; padding:18px; border-radius:8px; border:1px solid #eee; }
   </style>
 </head>
@@ -54,7 +49,7 @@
     </div>
     <div style="min-width:1px;"></div>
   </header>
-  <!-- Tabs -->
+
   <div class="tabs">
     <div class="tab active" data-tab="news">News</div>
     <div class="tab" data-tab="institution">Information of Institution</div>
@@ -68,32 +63,20 @@
       This is a student version — editing features are disabled.
     </div>
 
-    <!-- =======================
-         NEWS PANE
-         ======================= -->
     <div id="pane-news" class="pane active">
       <div id="articles" class="articles"></div>
     </div>
 
-    <!-- =======================
-         INSTITUTION PAGE
-         ======================= -->
     <div id="pane-institution" class="pane">
       <h2>Institution Information</h2>
       <div id="institution-display" class="info-display"></div>
     </div>
 
-    <!-- =======================
-         ANTI-FAKE PAGE
-         ======================= -->
     <div id="pane-antifake" class="pane">
       <h2>Anti-Fake News System</h2>
       <div id="antifake-display" class="info-display"></div>
     </div>
 
-    <!-- =======================
-         REPORT PAGE
-         ======================= -->
     <div id="pane-report" class="pane">
       <h2>Report</h2>
       <div id="report-display" class="info-display"></div>
@@ -104,17 +87,15 @@
     <div>Created for classroom media literacy. This is a student-safe static version.</div>
   </footer>
 
-  <!-- Modal -->
   <div id="modal-backdrop" class="modal-backdrop">
     <div class="modal">
       <button id="modal-close" style="float:right;background:#eee;border:none;border-radius:6px;padding:6px;cursor:pointer;">✕ Close</button>
       <div id="modal-content"></div>
     </div>
   </div>
+
 <script>
-/* ============================================
-   🔵 TAB SWITCHING
-   ============================================ */
+/* TAB SWITCHING */
 document.querySelectorAll('.tab').forEach(tab => {
   tab.addEventListener('click', () => {
     document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
@@ -128,27 +109,32 @@ document.querySelectorAll('.tab').forEach(tab => {
   });
 });
 
-/* ============================================
-   🔵 JSON 파일 주소 (GitHub RAW URL)
-   ============================================ */
+/* JSON URL */
 const JSON_URL =
   "https://raw.githubusercontent.com/qkrrjs146-oss/cicinternational/main/mocknews_export_2025-12-01%20(5).json";
-  
 
-/* ============================================
-   🔵 데이터 불러오기
-   ============================================ */
+/* LOAD DATA */
 let articles = [];
-let pages = {};  // institution, antifake, report
+let pages = {};
 
 async function loadData() {
   try {
     const response = await fetch(JSON_URL);
     const data = await response.json();
 
-    // JSON 구조: { articles: [...], pages: {...} }
-    articles = data.articles || [];
-    pages = data.pages || {};
+    /* ★ 여기부터가 새로 고친 핵심 부분 ★ */
+    if (Array.isArray(data)) {
+      // JSON이 배열이면 그대로 사용
+      articles = data;
+    } else if (data && Array.isArray(data.articles)) {
+      // JSON이 { articles: [...] } 형태이면 내부 배열 사용
+      articles = data.articles;
+    } else {
+      articles = [];
+    }
+
+    // pages도 자동 처리
+    pages = data.pages || data.page || {};
 
     renderArticles();
     renderPages();
@@ -160,9 +146,7 @@ async function loadData() {
   }
 }
 
-/* ============================================
-   🔵 유틸 함수
-   ============================================ */
+/* UTILS */
 function escapeHtml(text) {
   if (!text) return "";
   return text.replace(/[&<>"']/g, m => ({
@@ -170,9 +154,7 @@ function escapeHtml(text) {
   }[m]));
 }
 
-/* ============================================
-   🔵 ARTICLE LIST 렌더링
-   ============================================ */
+/* ARTICLES */
 function renderArticles() {
   const container = document.getElementById("articles");
   container.innerHTML = "";
@@ -214,9 +196,7 @@ function renderArticles() {
   );
 }
 
-/* ============================================
-   🔵 MODAL – 기사 본문 열기
-   ============================================ */
+/* MODAL */
 function openArticle(id) {
   const article = articles.find(a => a.id === id);
   if (!article) return;
@@ -239,7 +219,6 @@ function openArticle(id) {
   document.body.style.overflow = "hidden";
 }
 
-/* 닫기 이벤트 */
 document.getElementById("modal-close").addEventListener("click", closeModal);
 document.getElementById("modal-backdrop").addEventListener("click", e => {
   if (e.target === e.currentTarget) closeModal();
@@ -249,9 +228,7 @@ function closeModal() {
   document.body.style.overflow = "";
 }
 
-/* ============================================
-   🔵 Pages (institution / antifake / report)
-   ============================================ */
+/* PAGES */
 function renderPages() {
   document.getElementById("institution-display").innerHTML =
     escapeHtml(pages.institution || "").replace(/\n/g, "<br>");
@@ -263,12 +240,8 @@ function renderPages() {
     escapeHtml(pages.report || "").replace(/\n/g, "<br>");
 }
 
-/* ============================================
-   🔵 START
-   ============================================ */
+/* START */
 loadData();
 </script>
 </body>
 </html>
-
-
